@@ -44,31 +44,31 @@ rsas.listen({
 ### Options
 
 #### port
-Type: `Number`
+Type: `Number`  
 Default value: `9000`
 
 The port to listen on.
 
 #### dir
-Type: `String`
+Type: `String`  
 Default value: `current working directory`
 
 The directory to serve.
 
 #### env
-Type: `String`
+Type: `String`  
 Default value: `development`
 
 The current development environment `development/production`.
 
 #### proxy-url
-Type: `String`
+Type: `String`  
 Default value: `undefined`
 
 The url for the proxy to forward to.
 
 #### proxy-route
-Type: `String`
+Type: `String`  
 Default value: `/api`
 
 The server route to forward to the proxy.
