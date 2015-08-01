@@ -3,12 +3,16 @@ compression = require 'compression'
 gzippo = require 'gzippo'
 morgan = require 'morgan'
 http = require 'http'
+path = require 'path'
 chalk = require 'chalk'
 argv = require('minimist') process.argv.slice(2)
 
 rsas = (args) ->
   env = args?.env or argv.env or process.env.NODE_ENV or 'development'
-  dir = args?.dir or argv[0] or process.cwd()
+  dir = (args?.dir or argv._[0] or process.cwd()).replace(/^[\/\\]/,'')
+  if not path.isAbsolute dir
+    dir = path.join process.cwd(), dir
+  console.log dir
   app = express()
   app.set 'port', args?.port or argv.port or process.env.PORT or 9000
   .use compression()
