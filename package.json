@@ -1,6 +1,6 @@
 {
   "name": "rsas",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Really Simple Angular Server",
   "main": "dist/index.js",
   "bin": {
