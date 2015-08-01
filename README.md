@@ -3,7 +3,7 @@
 
 Can be used globally or required as a module
 
-## Installing
+### Installing
 *Stand alone*
 ```sh
 npm install -g rsas
@@ -13,17 +13,17 @@ npm install -g rsas
 npm install --save rsas
 ```
 
-## Usage
-### Stand alone  
+### Usage
+#### Stand alone  
 Simple
 ```sh
 rsas
 ```
 Fully loaded
 ```sh
-rsas /my-angular-project --port=8080 --env=production
+rsas /my-angular-project --port=8080 --env=production --proxy-url=www.google.com --proxy-route=/proxy
 ```
-### As a module
+#### As a module
 Quarter-pounder
 ```js
 var rsas = require('rsas');
@@ -35,6 +35,40 @@ var rsas = require('rsas');
 rsas.listen({
     dir: '/my-angular-project',
     port: 8080,
-    env: 'production'
+    env: 'production',
+    'proxy-url': 'www.google.com',
+    'proxy-route': '/proxy'
 });
 ```
+
+### Options
+
+#### port
+Type: `Number`
+Default value: `9000`
+
+The port to listen on.
+
+#### dir
+Type: `String`
+Default value: `current working directory`
+
+The directory to serve.
+
+#### env
+Type: `String`
+Default value: `development`
+
+The current development environment `development/production`.
+
+#### proxy-url
+Type: `String`
+Default value: `undefined`
+
+The url for the proxy to forward to.
+
+#### proxy-route
+Type: `String`
+Default value: `/api`
+
+The server route to forward to the proxy.

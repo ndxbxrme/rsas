@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 //'use strict';
 (function() {
-  var argv, chalk, compression, express, gzippo, http, morgan, path, rsas;
+  var argv, chalk, compression, express, gzippo, http, morgan, path, proxy, rsas;
 
   express = require('express');
+
+  proxy = require('express-http-proxy');
 
   compression = require('compression');
 
@@ -20,15 +22,23 @@
   argv = require('minimist')(process.argv.slice(2));
 
   rsas = function(args) {
-    var app, dir, env, server;
+    var app, dir, env, proxyRoute, proxyUrl, server;
     env = (args != null ? args.env : void 0) || argv.env || process.env.NODE_ENV || 'development';
     dir = ((args != null ? args.dir : void 0) || argv._[0] || process.cwd()).replace(/^[\/\\]/, '');
+    proxyUrl = (args != null ? args['proxy-url'] : void 0) || argv['proxy-url'];
+    proxyRoute = ((args != null ? args['proxy-route'] : void 0) || argv['proxy-route'] || 'api').replace(/^[\/\\]/, '');
     if (!path.isAbsolute(dir)) {
       dir = path.join(process.cwd(), dir);
     }
-    console.log(dir);
     app = express();
     app.set('port', (args != null ? args.port : void 0) || argv.port || process.env.PORT || 9000).use(compression()).use(morgan('dev'));
+    if (proxyUrl) {
+      app.use('/' + proxyRoute, proxy(proxyUrl, {
+        forwardPath: function(req, res) {
+          return require('url').parse(req.url).path;
+        }
+      }));
+    }
     if (env === 'development') {
       app.use('/', gzippo.staticGzip(dir + '/app'));
       app.use('/', gzippo.staticGzip(dir + '/client'));
