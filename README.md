@@ -1,4 +1,4 @@
-# rsas 
+# rsas [![Build Status](https://travis-ci.org/ndxbxrme/rsas.svg?branch=master)](https://travis-ci.org/ndxbxrme/rsas)
 ## A super-basic angular server
 
 Can be used globally or required as a module
@@ -24,12 +24,12 @@ Fully loaded
 rsas /my-angular-project --port=8080 --env=production
 ```
 ### As a module
-Simple
+Quarter-pounder
 ```js
 var rsas = require('rsas');
 rsas.listen();
 ```
-Fully loaded
+With cheese
 ```js
 var rsas = require('rsas');
 rsas.listen({
