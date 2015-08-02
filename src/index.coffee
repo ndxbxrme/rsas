@@ -28,12 +28,13 @@ rsas = (args) ->
     )
 
   if env is 'development'
-    app.use '/', gzippo.staticGzip dir + '/'
-    app.use '/', gzippo.staticGzip dir + '/app'
-    app.use '/', gzippo.staticGzip dir + '/client'
-    app.use '/', gzippo.staticGzip dir + '/assets'
-    app.use '/', gzippo.staticGzip dir + '/..'
-    app.use '/', gzippo.staticGzip dir + '/../..'
+    app.use '/', gzippo.staticGzip dir
+    app.use '/', gzippo.staticGzip path.join(dir, 'app')
+    app.use '/', gzippo.staticGzip path.join(dir, 'client')
+    app.use '/', gzippo.staticGzip path.join(dir, 'assets')
+    app.use '/', gzippo.staticGzip path.join(dir, '.tmp')
+    app.use '/', gzippo.staticGzip path.join(dir, '..')
+    app.use '/', gzippo.staticGzip path.join(dir, '../..')
     app.all '/*', (req, res) ->
       res.sendFile 'index.html', root: dir
   else
