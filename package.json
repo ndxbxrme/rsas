@@ -38,6 +38,7 @@
     "compression": "^1.5.2",
     "express": "^4.13.2",
     "express-http-proxy": "^0.6.0",
+    "find-file-sync": "0.0.4",
     "gzippo": "^0.2.0",
     "minimist": "^1.1.2",
     "morgan": "^1.6.1",

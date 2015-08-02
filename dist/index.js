@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 //'use strict';
 (function() {
-  var argv, chalk, compression, express, gzippo, http, morgan, path, proxy, rsas;
+  var argv, chalk, compression, express, findFileSync, gzippo, http, morgan, path, proxy, rsas;
 
   express = require('express');
 
@@ -17,12 +17,14 @@
 
   path = require('path');
 
+  findFileSync = require('find-file-sync');
+
   chalk = require('chalk');
 
   argv = require('minimist')(process.argv.slice(2));
 
   rsas = function(args) {
-    var app, dir, env, proxyRoute, proxyUrl, safeDepth, server;
+    var app, dir, env, index, proxyRoute, proxyUrl, safeDepth, server;
     env = (args != null ? args.env : void 0) || argv.env || process.env.NODE_ENV || 'development';
     dir = ((args != null ? args.dir : void 0) || argv._[0] || process.cwd()).replace(/^[\/\\]/, '');
     proxyUrl = (args != null ? args['proxy-url'] : void 0) || argv['proxy-url'];
@@ -36,6 +38,7 @@
     }
     app = express();
     app.set('port', (args != null ? args.port : void 0) || argv.port || process.env.PORT || 9000).use(compression()).use(morgan(env === 'development' ? 'dev' : 'tiny'));
+    index = findFileSync(dir, 'index.html', ['node_modules', '.git', 'bower_components']);
     if (proxyUrl) {
       app.use('/' + proxyRoute, proxy(proxyUrl, {
         forwardPath: function(req, res) {
@@ -44,6 +47,7 @@
       }));
     }
     if (env === 'development') {
+      app.use('/', gzippo.staticGzip(path.dirname(index)));
       app.use('/', gzippo.staticGzip(dir));
       app.use('/', gzippo.staticGzip(path.join(dir, 'app')));
       app.use('/', gzippo.staticGzip(path.join(dir, 'client')));
@@ -56,16 +60,13 @@
         app.use('/', gzippo.staticGzip(path.join(dir, '../..')));
       }
       app.all('/*', function(req, res) {
-        return res.sendFile('index.html', {
-          root: dir
-        });
+        return res.sendFile(index);
       });
     } else {
-      app.use('/*', gzippo.staticGzip(dir));
+      app.use('/', gzippo.staticGzip(path.dirname(index)));
+      app.use('/', gzippo.staticGzip(dir));
       app.all('/*', function(req, res) {
-        return res.sendFile('index.html', {
-          root: dir
-        });
+        return res.sendFile(index);
       });
     }
     server = http.createServer(app);
