@@ -22,13 +22,17 @@
   argv = require('minimist')(process.argv.slice(2));
 
   rsas = function(args) {
-    var app, dir, env, proxyRoute, proxyUrl, server;
+    var app, dir, env, proxyRoute, proxyUrl, safeDepth, server;
     env = (args != null ? args.env : void 0) || argv.env || process.env.NODE_ENV || 'development';
     dir = ((args != null ? args.dir : void 0) || argv._[0] || process.cwd()).replace(/^[\/\\]/, '');
     proxyUrl = (args != null ? args['proxy-url'] : void 0) || argv['proxy-url'];
     proxyRoute = ((args != null ? args['proxy-route'] : void 0) || argv['proxy-route'] || 'api').replace(/^[\/\\]/, '');
+    safeDepth = 0;
     if (!path.isAbsolute(dir)) {
       dir = path.join(process.cwd(), dir);
+    }
+    if (dir !== process.cwd() && dir[0] === process.cwd()[0]) {
+      safeDepth = dir.split(path.sep).length - process.cwd().split(path.sep).length;
     }
     app = express();
     app.set('port', (args != null ? args.port : void 0) || argv.port || process.env.PORT || 9000).use(compression()).use(morgan('dev'));
@@ -45,8 +49,12 @@
       app.use('/', gzippo.staticGzip(path.join(dir, 'client')));
       app.use('/', gzippo.staticGzip(path.join(dir, 'assets')));
       app.use('/', gzippo.staticGzip(path.join(dir, '.tmp')));
-      app.use('/', gzippo.staticGzip(path.join(dir, '..')));
-      app.use('/', gzippo.staticGzip(path.join(dir, '../..')));
+      if (safeDepth > 0) {
+        app.use('/', gzippo.staticGzip(path.join(dir, '..')));
+      }
+      if (safeDepth > 1) {
+        app.use('/', gzippo.staticGzip(path.join(dir, '../..')));
+      }
       app.all('/*', function(req, res) {
         return res.sendFile('index.html', {
           root: dir

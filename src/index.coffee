@@ -13,9 +13,13 @@ rsas = (args) ->
   dir = (args?.dir or argv._[0] or process.cwd()).replace(/^[\/\\]/,'')
   proxyUrl = args?['proxy-url'] or argv['proxy-url']
   proxyRoute = (args?['proxy-route'] or argv['proxy-route'] or 'api').replace(/^[\/\\]/,'')
+  safeDepth = 0
   
   if not path.isAbsolute dir
     dir = path.join process.cwd(), dir
+  if dir isnt process.cwd() and dir[0] is process.cwd()[0]
+    safeDepth = dir.split(path.sep).length - process.cwd().split(path.sep).length
+  
   app = express()
   app.set 'port', args?.port or argv.port or process.env.PORT or 9000
   .use compression()
@@ -33,8 +37,10 @@ rsas = (args) ->
     app.use '/', gzippo.staticGzip path.join(dir, 'client')
     app.use '/', gzippo.staticGzip path.join(dir, 'assets')
     app.use '/', gzippo.staticGzip path.join(dir, '.tmp')
-    app.use '/', gzippo.staticGzip path.join(dir, '..')
-    app.use '/', gzippo.staticGzip path.join(dir, '../..')
+    if safeDepth > 0
+      app.use '/', gzippo.staticGzip path.join(dir, '..')
+    if safeDepth > 1
+      app.use '/', gzippo.staticGzip path.join(dir, '../..')
     app.all '/*', (req, res) ->
       res.sendFile 'index.html', root: dir
   else
