@@ -23,7 +23,7 @@ rsas = (args) ->
   app = express()
   app.set 'port', args?.port or argv.port or process.env.PORT or 9000
   .use compression()
-  .use morgan('dev')
+  .use morgan(if env is 'development' then 'dev' else 'tiny')
   
   if proxyUrl
     app.use '/' + proxyRoute, proxy(proxyUrl,

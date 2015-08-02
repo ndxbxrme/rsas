@@ -35,7 +35,7 @@
       safeDepth = dir.split(path.sep).length - process.cwd().split(path.sep).length;
     }
     app = express();
-    app.set('port', (args != null ? args.port : void 0) || argv.port || process.env.PORT || 9000).use(compression()).use(morgan('dev'));
+    app.set('port', (args != null ? args.port : void 0) || argv.port || process.env.PORT || 9000).use(compression()).use(morgan(env === 'development' ? 'dev' : 'tiny'));
     if (proxyUrl) {
       app.use('/' + proxyRoute, proxy(proxyUrl, {
         forwardPath: function(req, res) {
