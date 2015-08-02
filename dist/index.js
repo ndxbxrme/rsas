@@ -39,7 +39,12 @@
         }
       }));
     }
+    app.use('/', function(req, res, next) {
+      console.dir(req);
+      return next();
+    });
     if (env === 'development') {
+      app.use('/', gzippo.staticGzip(dir + '/'));
       app.use('/', gzippo.staticGzip(dir + '/app'));
       app.use('/', gzippo.staticGzip(dir + '/client'));
       app.use('/', gzippo.staticGzip(dir + '/assets'));

@@ -26,8 +26,13 @@ rsas = (args) ->
       forwardPath: (req, res) ->
         return require('url').parse(req.url).path
     )
+    
+  app.use '/', (req, res, next) ->
+    console.dir req
+    next()
 
   if env is 'development'
+    app.use '/', gzippo.staticGzip dir + '/'
     app.use '/', gzippo.staticGzip dir + '/app'
     app.use '/', gzippo.staticGzip dir + '/client'
     app.use '/', gzippo.staticGzip dir + '/assets'
