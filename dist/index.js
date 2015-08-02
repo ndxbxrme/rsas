@@ -39,18 +39,16 @@
         }
       }));
     }
-    app.use('/', function(req, res, next) {
-      console.dir(req);
-      return next();
-    });
     if (env === 'development') {
       app.use('/', gzippo.staticGzip(dir + '/'));
       app.use('/', gzippo.staticGzip(dir + '/app'));
       app.use('/', gzippo.staticGzip(dir + '/client'));
       app.use('/', gzippo.staticGzip(dir + '/assets'));
+      app.use('/', gzippo.staticGzip(dir + '/..'));
+      app.use('/', gzippo.staticGzip(dir + '/../..'));
       app.all('/*', function(req, res) {
         return res.sendFile('index.html', {
-          root: dir + '/app'
+          root: dir
         });
       });
     } else {
