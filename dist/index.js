@@ -24,12 +24,14 @@
   argv = require('minimist')(process.argv.slice(2));
 
   rsas = function(args) {
-    var app, dir, env, index, proxyRoute, proxyUrl, safeDepth, server;
+    var app, dir, env, externalDir, index, proxyRoute, proxyUrl, safeDepth, server;
     env = (args != null ? args.env : void 0) || argv.env || process.env.NODE_ENV || 'development';
     dir = ((args != null ? args.dir : void 0) || argv._[0] || process.cwd()).replace(/^[\/\\]/, '');
     proxyUrl = (args != null ? args['proxy-url'] : void 0) || argv['proxy-url'];
     proxyRoute = ((args != null ? args['proxy-route'] : void 0) || argv['proxy-route'] || 'api').replace(/^[\/\\]/, '');
+    externalDir = (args != null ? args['external-dir'] : void 0) || argv['external-dir'];
     safeDepth = 0;
+    console.log('external dir', externalDir);
     if (!path.isAbsolute(dir)) {
       dir = path.join(process.cwd(), dir);
     }
@@ -58,6 +60,9 @@
       }
       if (safeDepth > 1) {
         app.use('/', gzippo.staticGzip(path.join(dir, '../..')));
+      }
+      if (externalDir) {
+        app.use('/', gzippo.staticGzip(path.join(dir, externalDir)));
       }
       app.all('/*', function(req, res) {
         return res.sendFile(index);

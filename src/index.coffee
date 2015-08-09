@@ -14,8 +14,9 @@ rsas = (args) ->
   dir = (args?.dir or argv._[0] or process.cwd()).replace(/^[\/\\]/,'')
   proxyUrl = args?['proxy-url'] or argv['proxy-url']
   proxyRoute = (args?['proxy-route'] or argv['proxy-route'] or 'api').replace(/^[\/\\]/,'')
+  externalDir = args?['external-dir'] or argv['external-dir']
   safeDepth = 0
-  
+  console.log 'external dir', externalDir
   if not path.isAbsolute dir
     dir = path.join process.cwd(), dir
   if dir isnt process.cwd() and dir[0] is process.cwd()[0]
@@ -45,6 +46,8 @@ rsas = (args) ->
       app.use '/', gzippo.staticGzip path.join(dir, '..')
     if safeDepth > 1
       app.use '/', gzippo.staticGzip path.join(dir, '../..')
+    if externalDir
+      app.use '/', gzippo.staticGzip path.join(dir, externalDir)
     app.all '/*', (req, res) ->
       res.sendFile index
   else
