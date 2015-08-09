@@ -17,7 +17,7 @@ rsas = (args) ->
   externalDir = args?['external-dir'] or argv['external-dir']
   userAgent = args?['user-agent'] or argv['user-agent']
   safeDepth = 0
-  console.log 'external dir', externalDir
+  
   if not path.isAbsolute dir
     dir = path.join process.cwd(), dir
   if dir isnt process.cwd() and dir[0] is process.cwd()[0]
