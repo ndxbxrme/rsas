@@ -41,6 +41,15 @@
     app = express();
     app.set('port', (args != null ? args.port : void 0) || argv.port || process.env.PORT || 9000).use(compression()).use(morgan(env === 'development' ? 'dev' : 'tiny'));
     index = findFileSync(dir, 'index.html', ['node_modules', '.git', 'bower_components']);
+    if (userAgent) {
+      app.use('/', function(req, res, next) {
+        if (req.headers['user-agent'] !== userAgent) {
+          return res.status(500).send('Not found');
+        } else {
+          return next();
+        }
+      });
+    }
     if (proxyUrl) {
       app.use('/' + proxyRoute, proxy(proxyUrl, {
         forwardPath: function(req, res) {

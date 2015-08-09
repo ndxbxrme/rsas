@@ -15,6 +15,7 @@ rsas = (args) ->
   proxyUrl = args?['proxy-url'] or argv['proxy-url']
   proxyRoute = (args?['proxy-route'] or argv['proxy-route'] or 'api').replace(/^[\/\\]/,'')
   externalDir = args?['external-dir'] or argv['external-dir']
+  userAgent = args?['user-agent'] or argv['user-agent']
   safeDepth = 0
   console.log 'external dir', externalDir
   if not path.isAbsolute dir
@@ -28,6 +29,14 @@ rsas = (args) ->
   .use morgan(if env is 'development' then 'dev' else 'tiny')
   
   index = findFileSync dir, 'index.html', ['node_modules', '.git', 'bower_components']
+  
+  if userAgent
+    app.use '/', (req, res, next) ->
+      if req.headers['user-agent'] isnt userAgent
+        return res.status(500).send 'Not found'
+      else
+        return next()
+      
   
   if proxyUrl
     app.use '/' + proxyRoute, proxy(proxyUrl,
